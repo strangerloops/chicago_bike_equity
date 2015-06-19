@@ -74,7 +74,7 @@ function findNearbyDivvyWithoutRed(e) {
 		map.removeLayer(nearestLayer);
 	}
 
-	point = {
+	var point = {
 		  'type': 'Feature',
 		  'properties': {
 		    'marker-color': '#0f0'
@@ -103,8 +103,11 @@ function findNearbyDivvyWithoutRed(e) {
 		onEachFeature: onEachDivvyStation
 	});
 
+	var totalDistance = 0;
+
 	for (var x = 0; x < 5; x++) {
 		var nextNearest = turf.nearest( point, divvyStationsFC );
+		totalDistance += turf.distance(point, nextNearest, 'miles');
 		var id = nextNearest.properties.ID;
 		divvyStationsFC = turf.remove(divvyStationsFC, 'ID', id);
 		nearestLayer.addData(nextNearest);
@@ -117,6 +120,9 @@ function findNearbyDivvyWithoutRed(e) {
 			setDistanceLabel(lines[x]).addTo(map); //distance label gets added
 		}
 	}
+	var averageDistance = totalDistance / 5;
+	var divvy_distance_content = 'Average distance to the nearest five Divvy stations is ' + averageDistance.toFixed(3) + ' miles.'
+	appendIteration("_divvy_distance", divvy_distance_content);
 	nearestLayer.addTo(map);
 	//map.fitBounds(nearestLayer);
 }
@@ -245,7 +251,7 @@ function showAddress (e) {
 		}
 	});
 	// Create an empty shell for the Access Index results to go into
-	$('#features .sidebar-table').prepend('<div class="panel-heading coordinate iteration_' + iteration + '"><h4 class="iteration_' + iteration + '_address" id="address'+iteration+'"> </h4><div class="iteration_' + iteration + '_bike_lanes"></div><div class="iteration_' + iteration + '_hypertension"></div><div class="iteration_' + iteration + '_bike_racks"></div></div>');
+	$('#features .sidebar-table').prepend('<div class="panel-heading coordinate iteration_' + iteration + '"><h4 class="iteration_' + iteration + '_address" id="address'+iteration+'"> </h4><div class="iteration_' + iteration + '_divvy_distance"></h4><div class="iteration_' + iteration + '_bike_lanes"></div><div class="iteration_' + iteration + '_hypertension"></div><div class="iteration_' + iteration + '_bike_racks"></div></div>');
 	
 	
 	// Other Access Index functions
